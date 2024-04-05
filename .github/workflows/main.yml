@@ -15,11 +15,12 @@ jobs:
     - name: Install Dependencies
       run: |
         sudo apt update
-        sudo apt install -y tree bc bison build-essential ccache curl flex g++-multilib gcc-multilib git gnupg gperf imagemagick lib32ncurses5-dev lib32z-dev libelf-dev liblz4-tool libncurses5-dev libsdl1.2-dev libssl-dev libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev adb fastboot
-
+        sudo apt install -y llvm-15 python-pip tree bc bison build-essential ccache curl flex g++-multilib gcc-multilib git gnupg gperf imagemagick lib32ncurses5-dev lib32z-dev libelf-dev liblz4-tool libncurses5-dev libsdl1.2-dev libssl-dev libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev adb fastboot
+        pip install ast-grep-cli
+        
     - name: Download kernel and toolchains
       run: |
-        git clone https://github.com/xiaomi-mayfly-devs/android_kernel_xiaomi_sm8450.git --depth=1
+        git clone https://github.com/cupid-development/android_kernel_xiaomi_sm8450.git --depth=1
         git clone https://github.com/LineageOS/android_prebuilts_clang_kernel_linux-x86_clang-r416183b.git --depth=1
         git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9.git --depth=1
         git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9.git --depth=1
@@ -30,17 +31,23 @@ jobs:
         echo "CC=clang" >> $GITHUB_ENV
         echo "CLANG_TRIPLE=aarch64-linux-android-" >> $GITHUB_ENV
         echo "CROSS_COMPILE=aarch64-linux-android-" >> $GITHUB_ENV
-        echo "CROSS_COMPILE_ARM32=arm-linux-androideabi-" >> $GITHUB_ENV
+        echo "CROSS_COMPILE_COMPA=arm-linux-androideabi-" >> $GITHUB_ENV
         echo "ARCH=arm64" >> $GITHUB_ENV
 
     - name: Build Kernel
       run: |
         cd android_kernel_xiaomi_sm8450
-        make O=out CC=clang ARCH=arm64 CLANG_TRIPLE=aarch64-linux-android- CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- gki_defconfig
-        make -j$(nproc) V=1 O=out CC=clang ARCH=arm64
+        curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
+        cat KernelSU/kernel/export_symbol.txt | awk '{sub("[ \t]+","");print "  "$0}' >> android/abi_gki_aarch64
+        ast-grep -U -p '$$$ check_exports($$$) {$$$}' -r '' scripts/mod/modpost.c
+        ast-grep -U -p 'check_exports($$$);' -r '' scripts/mod/modpost.c
+        sed -i '/config KSU/,/help/{s/default y/default m/}' drivers/kernelsu/Kconfig
+        echo "drivers/kernelsu/kernelsu.ko" >> android/gki_aarch64_modules
+        make O=out CC=clang ARCH=arm64 CLANG_TRIPLE=aarch64-linux-android- CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_COMPA=arm-linux-androideabi- gki_defconfig
+        make -j$(nproc) O=out CC=clang ARCH=arm64
 
     - name: Upload Kernel
       uses: actions/upload-artifact@v4.3.1
       with:
         name: kernel
-        path: android_kernel_xiaomi_sm8450/out/arch/arm64/boot/*
+        path: android_kernel_xiaomi_sm8450/out/arch/arm64/*
