@@ -48,8 +48,21 @@ jobs:
         ast-grep -U -p 'check_exports($$$);' -r '' scripts/mod/modpost.c
         sed -i '/config KSU/,/help/{s/default y/default m/}' drivers/kernelsu/Kconfig
         echo "drivers/kernelsu/kernelsu.ko" >> android/gki_aarch64_modules
-        make O=out CONFIG_KSU=m CC=clang ARCH=arm64 CLANG_TRIPLE=aarch64-linux-android- CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_COMPA=arm-linux-androideabi- gki_defconfig
-        make -j$(nproc)  O=out CC=clang ARCH=arm64 CONFIG_KSU=m
+        make O=out CC=clang ARCH=arm64 CLANG_TRIPLE=aarch64-linux-android- CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_COMPA=arm-linux-androideabi- gki_defconfig
+        if grep -q "^CONFIG_KSU=y" .config; then
+        # 如果文件中有"CONFIG_KSU=y"，则替换为"CONFIG_KSU=m"
+          sed -i 's/^CONFIG_KSU=y/CONFIG_KSU=m/' .config
+          echo "已将CONFIG_KSU=y替换为CONFIG_KSU=m"
+        elif grep -q "^CONFIG_KSU=m" .config; then
+             # 如果文件中已经有"CONFIG_KSU=m"，则不做任何操作
+             echo "CONFIG_KSU已经设置为m，无需更改"
+        else
+          # 如果文件中没有"CONFIG_KSU=y"或"CONFIG_KSU=m"，则在文件末尾添加"CONFIG_KSU=m"
+            echo "CONFIG_KSU=m" >> .config
+            echo "已在文件末尾添加CONFIG_KSU=m"
+        fi
+        
+        make -j$(nproc)  O=out CC=clang ARCH=arm64
 
     - name: Upload Kernel
       uses: actions/upload-artifact@v4.3.1
