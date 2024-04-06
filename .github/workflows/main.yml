@@ -58,5 +58,6 @@ jobs:
       uses: actions/upload-artifact@v4.3.1
       with:
         name: kernel
-        path: android_kernel_xiaomi_sm8450/out/arch/arm64/*
+        path: |
+              android_kernel_xiaomi_sm8450/out/arch/arm64/*
               android_kernel_xiaomi_sm8450/KernelSU/kernel/Kconfig
