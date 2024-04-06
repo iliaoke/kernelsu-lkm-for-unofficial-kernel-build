@@ -43,7 +43,9 @@ jobs:
       run: |
         cd android_kernel_xiaomi_sm8450
         curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
+        set -e
         sed -i 's/default y/default m/g' drivers/kernelsu/Kconfig
+        grep "default m" drivers/kernelsu/Kconfig
         #cat KernelSU/kernel/export_symbol.txt | awk '{sub("[ \t]+","");print "  "$0}' >> android/abi_gki_aarch64
         #ast-grep -U -p '$$$ check_exports($$$) {$$$}' -r '' scripts/mod/modpost.c
         #ast-grep -U -p 'check_exports($$$);' -r '' scripts/mod/modpost.c
