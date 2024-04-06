@@ -46,7 +46,6 @@ jobs:
         cat KernelSU/kernel/export_symbol.txt | awk '{sub("[ \t]+","");print "  "$0}' >> android/abi_gki_aarch64
         ast-grep -U -p '$$$ check_exports($$$) {$$$}' -r '' scripts/mod/modpost.c
         ast-grep -U -p 'check_exports($$$);' -r '' scripts/mod/modpost.c
-        set -e
         sed -i '/config KSU/,/help/{s/default y/default m/}' drivers/kernelsu/Kconfig
         echo "drivers/kernelsu/kernelsu.ko" >> android/gki_aarch64_modules
         make O=out CC=clang ARCH=arm64 CLANG_TRIPLE=aarch64-linux-android- CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_COMPAT=arm-linux-androideabi- gki_defconfig
