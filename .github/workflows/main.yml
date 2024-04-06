@@ -43,12 +43,10 @@ jobs:
       run: |
         cd android_kernel_xiaomi_sm8450
         curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
-        set -e
-        sed -i 's/default y/default m/g' KernelSU/kernel/Kconfig
-        #cat KernelSU/kernel/export_symbol.txt | awk '{sub("[ \t]+","");print "  "$0}' >> android/abi_gki_aarch64
-        #ast-grep -U -p '$$$ check_exports($$$) {$$$}' -r '' scripts/mod/modpost.c
-        #ast-grep -U -p 'check_exports($$$);' -r '' scripts/mod/modpost.c
-        #sed -i '/config KSU/,/help/{s/default y/default m/}' drivers/kernelsu/Kconfig
+        cat KernelSU/kernel/export_symbol.txt | awk '{sub("[ \t]+","");print "  "$0}' >> android/abi_gki_aarch64
+        ast-grep -U -p '$$$ check_exports($$$) {$$$}' -r '' scripts/mod/modpost.c
+        ast-grep -U -p 'check_exports($$$);' -r '' scripts/mod/modpost.c
+        sed -i '/config KSU/,/help/{s/default y/default m/}' drivers/kernelsu/Kconfig
         echo "drivers/kernelsu/kernelsu.ko" >> android/gki_aarch64_modules
         make O=out CC=clang ARCH=arm64 CLANG_TRIPLE=aarch64-linux-android- CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_COMPA=arm-linux-androideabi- gki_defconfig
         ls -a
