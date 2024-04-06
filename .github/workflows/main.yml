@@ -52,6 +52,7 @@ jobs:
         sed -i '/config KSU/,/help/{s/default y/default m/}' drivers/kernelsu/Kconfig
         echo "drivers/kernelsu/kernelsu.ko" >> android/gki_aarch64_modules
         make O=out CC=clang ARCH=arm64 CLANG_TRIPLE=aarch64-linux-android- CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_COMPA=arm-linux-androideabi- gki_defconfig
+        cat .config
         make -j$(nproc)  O=out ARCH=arm64 O=out CC=clang CLANG_TRIPLE=aarch64-linux-android- CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_COMPA=arm-linux-androideabi-
 
     - name: Upload Kernel
