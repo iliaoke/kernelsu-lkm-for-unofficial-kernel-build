@@ -56,6 +56,6 @@ jobs:
       with:
         name: kernel
         path: |
-              android_kernel_xiaomi_sm8450/out/arch/arm64/*
+              android_kernel_xiaomi_sm8450/arch/arm64/boot/*
               android_kernel_xiaomi_sm8450/KernelSU/kernel/Kconfig
               android_kernel_xiaomi_sm8450/.config
