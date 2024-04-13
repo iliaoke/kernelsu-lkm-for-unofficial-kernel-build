@@ -49,7 +49,7 @@ jobs:
         sed -i '/config KSU/,/help/{s/default y/default m/}' drivers/kernelsu/Kconfig
         echo "drivers/kernelsu/kernelsu.ko" >> android/gki_aarch64_modules
         make LTO=thin CC=clang ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- gki_defconfig
-        make -j$(nproc) LTO=thin ARCH=arm64 CC=clang  CROSS_COMPILE=aarch64-linux-android-  -C ./ modules
+        make -j$(nproc) LTO=thin ARCH=arm64 CC=clang  CROSS_COMPILE=aarch64-linux-android-  -C $(PWD) M=$(PWD) modules
 
     - name: Upload Kernel
       uses: actions/upload-artifact@v4.3.1
