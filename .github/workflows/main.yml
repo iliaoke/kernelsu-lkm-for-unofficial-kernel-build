@@ -38,7 +38,6 @@ jobs:
         echo "CROSS_COMPILE=aarch64-linux-android-" >> $GITHUB_ENV
         echo "CROSS_COMPILE_COMPA=arm-linux-androideabi-" >> $GITHUB_ENV
         echo "ARCH=arm64" >> $GITHUB_ENV
-        export CURRENR_DIR=$(shell pwd)
 
     - name: Build Kernel
       run: |
@@ -50,6 +49,8 @@ jobs:
         sed -i '/config KSU/,/help/{s/default y/default m/}' drivers/kernelsu/Kconfig
         echo "drivers/kernelsu/kernelsu.ko" >> android/gki_aarch64_modules
         make LTO=thin CC=clang ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- gki_defconfig
+        export CURRENR_DIR= $(shell pwd)
+        export GKI_ROOT=/home/runner/work/kernel-build/kernel-build/android_kernel_xiaomi_sm8450
         make -j$(nproc) LTO=thin ARCH=arm64 CC=clang  CROSS_COMPILE=aarch64-linux-android- modules -C $(GKI_ROOT) M=$(CURRENR_DIR)
 
     - name: Upload Kernel
