@@ -9,6 +9,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Set swap to 10G
+      uses: pierotofy/set-swap-space@master
+      with:
+        swap-size-gb: 10
+    - name: Remove unused packages
+      if: env.REMOVE_UNUSED_PACKAGES == 'true'
+      uses: jlumbroso/free-disk-space@main
+      with:
+        tool-cache: ture
+        android: false
+        dotnet: true
+        haskell: true
+        large-packages: true
+        docker-images: true
+        swap-storage: false
+        
     - name: Checkout code
       uses: actions/checkout@v4.1.1
 
