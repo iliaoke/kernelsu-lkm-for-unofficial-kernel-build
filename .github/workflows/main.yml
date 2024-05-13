@@ -69,13 +69,9 @@ jobs:
         mkdir out
         make LTO=thin CC=clang ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- SUBARCH=arm64 O=out gki_defconfig
         make -j$(nproc) LTO=thin ARCH=arm64 CC=clang  CROSS_COMPILE=aarch64-linux-android- SUBARCH=arm64 O=out modules
-        ls out
-        cd ..
-        zip -r 1.zip ./android_kernel_xiaomi_sm8450
-
     - name: Upload Kernel
       uses: actions/upload-artifact@v4.3.1
       with:
         name: kernel
         path: |
-              1.zip
+              android_kernel_xiaomi_sm8450/out/drivers/kernelsu/kernelsu.ko
