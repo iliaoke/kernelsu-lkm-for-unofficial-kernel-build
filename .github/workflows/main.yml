@@ -48,6 +48,8 @@ jobs:
         ast-grep -U -p 'check_exports($$$);' -r '' scripts/mod/modpost.c
         sed -i '/config KSU/,/help/{s/default y/default m/}' drivers/kernelsu/Kconfig
         echo "drivers/kernelsu/kernelsu.ko" >> android/gki_aarch64_modules
+        echo CONFIG_MODULES=m >> $GITHUB_WORKSPACE/android_kernel_xiaomi_sm8450/arch/arm64/configs/gki_defconfig
+        echo CONFIG_KSU=m >> $GITHUB_WORKSPACE/android_kernel_xiaomi_sm8450/arch/arm64/configs/gki_defconfig
         make LTO=thin CC=clang ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- SUBARCH=arm64 gki_defconfig
         make -j$(nproc) LTO=thin ARCH=arm64 CC=clang  CROSS_COMPILE=aarch64-linux-android- SUBARCH=arm64 modules
 
